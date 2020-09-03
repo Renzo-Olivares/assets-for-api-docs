@@ -9,6 +9,7 @@ dependencies:
   path_provider: any
   archive: ^2.0.10
   process: 3.0.12
+  animations: ^1.1.2
 
 dev_dependencies:
   flutter_test:
