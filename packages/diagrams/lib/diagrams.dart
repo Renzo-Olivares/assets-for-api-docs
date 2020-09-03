@@ -9,6 +9,7 @@ export 'src/align.dart';
 export 'src/animated_builder.dart';
 export 'src/animation_diagram.dart';
 export 'src/animation_status_value.dart';
+export 'src/animations_package.dart';
 export 'src/app_bar.dart';
 export 'src/blend_mode.dart';
 export 'src/bottom_navigation_bar.dart';

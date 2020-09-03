@@ -98,16 +98,15 @@ class _DiagramViewConfiguration extends ViewConfiguration {
 }
 
 // Provides a concrete implementation of WidgetController.
-class _DiagramWidgetController extends WidgetController implements TickerProvider {
+class _DiagramWidgetController extends WidgetController
+    implements TickerProvider {
   _DiagramWidgetController(WidgetsBinding binding) : super(binding);
 
   @override
   DiagramFlutterBinding get binding => super.binding as DiagramFlutterBinding;
 
   @override
-  Future<void> pump([
-    Duration duration
-  ]) {
+  Future<void> pump([Duration duration]) {
     return TestAsyncUtils.guard(() => binding.pump(duration: duration));
   }
 
@@ -128,8 +127,16 @@ class _DiagramWidgetController extends WidgetController implements TickerProvide
   }
 
   @override
-  Future<List<Duration>> handlePointerEventRecord(List<PointerEventRecord> records) async {
+  Future<List<Duration>> handlePointerEventRecord(
+      List<PointerEventRecord> records) async {
     return const <Duration>[];
+  }
+
+  @override
+  Future<int> pumpAndSettle(
+      [Duration duration = const Duration(milliseconds: 100)]) {
+    // TODO: implement pumpAndSettle
+    throw UnimplementedError();
   }
 }
 
@@ -142,8 +149,7 @@ class _DiagramTicker extends Ticker {
 
   @override
   void dispose() {
-    if (_onDispose != null)
-      _onDispose(this);
+    if (_onDispose != null) _onDispose(this);
     super.dispose();
   }
 }
@@ -221,7 +227,8 @@ class DiagramFlutterBinding extends BindingBase
 
   /// Captures an image of the [RepaintBoundary] with the given key.
   Future<ui.Image> takeSnapshot() {
-    final RenderRepaintBoundary object = _boundaryKey.currentContext.findRenderObject() as RenderRepaintBoundary;
+    final RenderRepaintBoundary object =
+        _boundaryKey.currentContext.findRenderObject() as RenderRepaintBoundary;
     return object.toImage(pixelRatio: pixelRatio);
   }
 
@@ -242,7 +249,7 @@ class DiagramFlutterBinding extends BindingBase
   /// Advances time by the given duration, and generates a frame.
   ///
   /// The [duration] must not be null, or less than [Duration.zero].
-  Future<void>  pump({Duration duration = Duration.zero}) {
+  Future<void> pump({Duration duration = Duration.zero}) {
     assert(duration != null);
     assert(duration >= Duration.zero);
     _timestamp += duration;
@@ -329,7 +336,8 @@ class DiagramController {
   /// gesture ([startGesture] automatically does this for you for the initial
   /// tap down event).
   Future<TestGesture> startGesture(Offset location, {int pointer}) async {
-    final TestGesture gesture = await _binding.startGesture(location, pointer: pointer);
+    final TestGesture gesture =
+        await _binding.startGesture(location, pointer: pointer);
     advanceTime(); // Schedule a frame.
     return gesture;
   }
@@ -337,7 +345,8 @@ class DiagramController {
   /// Advances the animation clock by the given duration.
   ///
   /// The [increment] must be greater than, or equal to, [Duration.zero].
-  void advanceTime([Duration increment]) => _binding.pump(duration: increment ?? Duration.zero);
+  void advanceTime([Duration increment]) =>
+      _binding.pump(duration: increment ?? Duration.zero);
 
   /// Returns an [image.Image] representing the current diagram.
   ///
@@ -365,7 +374,8 @@ class DiagramController {
     assert(outputFile != null);
     if (!outputFile.isAbsolute && outputDirectory != null) {
       // If output path is relative, make it relative to the output directory.
-      outputFile = File(path.join(outputDirectory.absolute.path, outputFile.path));
+      outputFile =
+          File(path.join(outputDirectory.absolute.path, outputFile.path));
     }
     assert(outputFile.path.endsWith('.png'));
     final ui.Image captured = await drawDiagramToImage(timestamp: timestamp);
@@ -464,17 +474,18 @@ class DiagramController {
     assert(start >= Duration.zero);
 
     Duration now = start;
-    final Duration frameDuration = Duration(microseconds: (1e6 / frameRate).round());
+    final Duration frameDuration =
+        Duration(microseconds: (1e6 / frameRate).round());
     int index = 0;
     final List<File> outputFiles = <File>[];
     List<Duration> keys;
     if (keyframes != null) {
-      keys = keyframes.keys.toList()
-        ..sort();
+      keys = keyframes.keys.toList()..sort();
     }
     // Add an half-frame to account for possible rounding error: we want
     // to make sure to get the last frame.
-    while (now <= (end + Duration(microseconds: frameDuration.inMicroseconds ~/ 2))) {
+    while (now <=
+        (end + Duration(microseconds: frameDuration.inMicroseconds ~/ 2))) {
       // If we've arrived at the next keyframe, then call the keyframe
       // function to execute the next event.
       if (keys != null && keys.isNotEmpty) {
@@ -484,13 +495,13 @@ class DiagramController {
         }
       }
 
-      if (gestureCallback != null)
-        gestureCallback(this, now);
+      if (gestureCallback != null) gestureCallback(this, now);
       final File outputFile = _getFrameFilename(now, index, name);
       final ui.Image captured = await drawDiagramToImage();
       final ByteData encoded = await captured.toByteData(format: format);
       final List<int> bytes = encoded.buffer.asUint8List().toList();
-      print('Writing frame $index ($now), ${bytes.length} bytes, ${captured.width}x${captured.height} '
+      print(
+          'Writing frame $index ($now), ${bytes.length} bytes, ${captured.width}x${captured.height} '
           '${_byteFormatToString(format)}, to: ${outputFile.absolute.path}');
       outputFile.writeAsBytesSync(bytes);
       advanceTime(frameDuration);
@@ -498,7 +509,8 @@ class DiagramController {
       now += frameDuration;
       ++index;
     }
-    final File metadataFile = File(path.join(outputDirectory.absolute.path, '$name.json'));
+    final File metadataFile =
+        File(path.join(outputDirectory.absolute.path, '$name.json'));
     final AnimationMetadata metadata = AnimationMetadata.fromData(
       name: name,
       category: category,

@@ -18,12 +18,13 @@ const platform_pkg.Platform platform = platform_pkg.LocalPlatform();
 Future<Directory> prepareOutputDirectory(String outputDir) async {
   Directory directory;
   if (platform.isAndroid) {
-      directory = Directory(
-        outputDir ?? path.join(
-          (await getApplicationDocumentsDirectory()).absolute.path,
-          'diagrams',
-        ),
-      );
+    directory = Directory(
+      outputDir ??
+          path.join(
+            (await getApplicationDocumentsDirectory()).absolute.path,
+            'diagrams',
+          ),
+    );
   } else {
     directory = Directory(outputDir);
   }
@@ -45,11 +46,13 @@ Future<void> main() async {
   parser.addOption('outputDir');
   final ArgResults flags = parser.parse(arguments);
 
-  final List<String> categories = flags['category'] as List<String> ?? <String>[];
+  final List<String> categories =
+      flags['category'] as List<String> ?? <String>[];
   final List<String> names = flags['name'] as List<String> ?? <String>[];
 
   final DateTime start = DateTime.now();
-  final Directory outputDirectory = await prepareOutputDirectory(platform.isAndroid ? null : '/tmp/diagrams');
+  final Directory outputDirectory =
+      await prepareOutputDirectory(platform.isAndroid ? null : '/tmp/diagrams');
 
   final DiagramController controller = DiagramController(
     outputDirectory: outputDirectory,
@@ -64,6 +67,7 @@ Future<void> main() async {
     AlignDiagramStep(controller),
     AnimatedBuilderDiagramStep(controller),
     AnimationStatusValueDiagramStep(controller),
+    AnimationsPackageDiagramStep(controller),
     AppBarDiagramStep(controller),
     BlendModeDiagramStep(controller),
     BottomNavigationBarDiagramStep(controller),
